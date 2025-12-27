@@ -9,18 +9,21 @@ import axios from 'axios';
 /**
  * Get Backend API URL
  * Priority:
- * 1. NEXT_PUBLIC_API_URL environment variable (for production/Vercel)
- * 2. window.location.hostname:3001 (for local network access)
- * 3. localhost:3001 (fallback)
+ * 1. NEXT_PUBLIC_API_URL environment variable (ALWAYS used if set - for production/Vercel)
+ * 2. window.location.hostname:3001 (for local network access in development)
+ * 3. localhost:3001 (fallback for server-side rendering)
+ * 
+ * CRITICAL: In production, NEXT_PUBLIC_API_URL must be set to:
+ * https://api.focusmateapp.app
  */
 function getBackendUrl(): string {
-  // 1. Check environment variable first (for production/deployment)
-  // This should be set in Vercel: API_BASE_URL or NEXT_PUBLIC_API_URL
+  // CRITICAL: Always use NEXT_PUBLIC_API_URL if set (for production/Vercel)
+  // This ensures production deployments ALWAYS use the correct Railway backend URL
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
 
-  // 2. For browser/client-side: use window.location.hostname for network access
+  // Development: For browser/client-side: use window.location.hostname for network access
   // This allows mobile devices on the same network to connect
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
@@ -28,7 +31,7 @@ function getBackendUrl(): string {
     return `http://${hostname}:3001`;
   }
 
-  // 3. Fallback for server-side rendering
+  // Fallback for server-side rendering
   return 'http://localhost:3001';
 }
 
@@ -82,5 +85,12 @@ adminApi.interceptors.response.use(
 );
 
 export default adminApi;
+
+
+
+
+
+
+
 
 
