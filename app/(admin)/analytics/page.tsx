@@ -4,10 +4,23 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { adminApiService } from '@/lib/admin-api';
-import { TrendingUp, Users, Calendar, Activity, Clock } from 'lucide-react';
+import { TrendingUp, Users, Calendar, Activity } from 'lucide-react';
 
-// Dynamically import recharts to avoid SSR issues
-// Using individual dynamic imports for each component
+interface AnalyticsData {
+  success: boolean;
+  summary: {
+    totalUsers: number;
+    active: number;
+    suspended: number;
+    recentLogins: number;
+  };
+  weeklySignups: Array<{ date: string; count: number }>;
+  roleDistribution: Array<{ role: string; count: number }>;
+}
+
+const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+
+// Dynamically import Recharts components with SSR disabled
 const LineChart = dynamic(
   () => import('recharts').then((mod) => mod.LineChart),
   { ssr: false }
@@ -61,25 +74,13 @@ const ResponsiveContainer = dynamic(
   { ssr: false }
 );
 
-interface AnalyticsData {
-  success: boolean;
-  summary: {
-    totalUsers: number;
-    active: number;
-    suspended: number;
-    recentLogins: number;
-  };
-  weeklySignups: Array<{ date: string; count: number }>;
-  roleDistribution: Array<{ role: string; count: number }>;
-}
-
-const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
-
 export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const loadAnalytics = async () => {
       try {
         const data = await adminApiService.getAnalytics();
@@ -180,80 +181,86 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* Weekly Signups Line Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Weekly Signups Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={signupChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="signups"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  name="New Signups"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      {/* Charts Row - Only render when mounted (client-side) */}
+      {mounted && (
+        <>
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Weekly Signups Line Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Weekly Signups Trend</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={signupChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="signups"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      name="New Signups"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-        {/* Role Distribution Pie Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>User Role Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={roleChartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {roleChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+            {/* Role Distribution Pie Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>User Role Distribution</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={roleChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) =>
+                        `${name} ${((percent || 0) * 100).toFixed(0)}%`
+                      }
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {roleChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
 
-      {/* Weekly Signups Bar Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Daily Signups (Last 7 Days)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={signupChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="signups" fill="#3b82f6" name="Signups" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+          {/* Weekly Signups Bar Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Daily Signups (Last 7 Days)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={signupChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="signups" fill="#3b82f6" name="Signups" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
