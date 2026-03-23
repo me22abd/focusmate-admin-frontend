@@ -6,11 +6,11 @@ import { adminApiService } from '@/lib/admin-api';
 import { authService } from '@/lib/auth';
 import type { User } from '@/types';
 import Button from '@/components/Button';
-import { Users as UsersIcon, Mail, Calendar } from 'lucide-react';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionUserId, setActionUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -32,12 +32,43 @@ export default function UsersPage() {
     if (!admin) return;
 
     try {
+      setActionUserId(userId);
       await adminApiService.suspendUser(userId, admin.id);
       // Reload users
       const data = await adminApiService.getAllUsers();
       setUsers(data);
     } catch (error) {
       console.error('Failed to suspend user:', error);
+    } finally {
+      setActionUserId(null);
+    }
+  };
+
+  const handleDelete = async (userId: string, userEmail: string) => {
+    const admin = authService.getAdmin();
+    if (!admin) return;
+
+    // Safety: prevent deleting currently logged-in admin account from this screen
+    if (admin.id === userId) {
+      alert('You cannot delete your currently logged-in admin account.');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete user "${userEmail}" permanently?\n\nThis action cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    try {
+      setActionUserId(userId);
+      await adminApiService.deleteUser(userId, admin.id);
+      const data = await adminApiService.getAllUsers();
+      setUsers(data);
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      alert('Failed to delete user. Please try again.');
+    } finally {
+      setActionUserId(null);
     }
   };
 
@@ -101,13 +132,24 @@ export default function UsersPage() {
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-4">
+                      <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleSuspend(user.id)}
+                        disabled={actionUserId === user.id}
                       >
                         {user.suspended ? 'Unsuspend' : 'Suspend'}
                       </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(user.id, user.email)}
+                          disabled={actionUserId === user.id}
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
