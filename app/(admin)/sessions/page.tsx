@@ -60,14 +60,14 @@ export default function SessionsPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="text-center">Loading sessions...</div>
       </div>
     );
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Filters and Search */}
       <Card>
         <CardHeader>
@@ -126,7 +126,7 @@ export default function SessionsPage() {
               <tbody>
                 {filteredSessions.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                    <td colSpan={7} className="p-4 sm:p-6 lg:p-8 text-center text-muted-foreground">
                       No sessions found
                     </td>
                   </tr>

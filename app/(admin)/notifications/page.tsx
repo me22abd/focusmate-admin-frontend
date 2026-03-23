@@ -27,14 +27,14 @@ export default function NotificationsPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="text-center">Loading notifications...</div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
         <p className="text-muted-foreground">View all system notifications</p>
       </div>

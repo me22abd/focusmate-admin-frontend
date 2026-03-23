@@ -30,7 +30,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-50">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-blue-50/30">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <div className="flex items-center justify-center mb-6">
           <Shield className="h-12 w-12 text-primary" />
@@ -83,6 +83,8 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
 
 
 

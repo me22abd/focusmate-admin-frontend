@@ -33,7 +33,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="text-center">Loading settings...</div>
       </div>
     );
@@ -42,7 +42,7 @@ export default function SettingsPage() {
   const isDbHealthy = health?.dbStatus === 'connected' || health?.database === 'ok';
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       <div className="mb-6">
         <p className="text-muted-foreground">Manage app configuration and system settings</p>
       </div>
@@ -194,6 +194,8 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+
 
 
 

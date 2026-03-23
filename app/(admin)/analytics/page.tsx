@@ -100,7 +100,7 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="text-center">Loading analytics...</div>
       </div>
     );
@@ -108,7 +108,7 @@ export default function AnalyticsPage() {
 
   if (!analytics) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="text-center text-red-500">Failed to load analytics</div>
       </div>
     );
@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
   }));
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>

@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="text-center">Loading dashboard...</div>
       </div>
     );
@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const isDbHealthy = health?.dbStatus === 'connected' || health?.database === 'ok';
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
         <p className="text-muted-foreground">Overview of system statistics and health</p>
       </div>
