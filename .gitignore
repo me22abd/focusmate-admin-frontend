@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -20,10 +21,32 @@
 *.pem
 
 # debug
+=======
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Next.js
+.next/
+out/
+
+# Builds / dist
+build/
+dist/
+
+# Logs
+*.log
+>>>>>>> ae6d4a4 (Final submission cleanup - removed sensitive data and unnecessary files)
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+<<<<<<< HEAD
 # local env files
 .env*.local
 
@@ -42,4 +65,53 @@ next-env.d.ts
 
 
 
+=======
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Vercel
+.vercel/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.sqlite
+*.db
+
+# Backend
+backend/dist/
+backend/.env
+backend/.env.*
+
+# Frontend
+frontend/.next/
+frontend/out/
+admin-frontend/.next/
+admin-frontend/out/
+>>>>>>> ae6d4a4 (Final submission cleanup - removed sensitive data and unnecessary files)
 
